@@ -239,7 +239,8 @@ def normalize(X_train, X_val=None, X_test=None, binary=False, classic=False):
         Xn = Xn * (new_max - new_min) + new_min
 
         if binary:
-            Xn = np.round(Xn).astype(int)
+            #Xn = np.round(Xn).astype(int)
+            Xn = np.clip(np.round(Xn), new_min, new_max).astype(int)
 
         return Xn
 

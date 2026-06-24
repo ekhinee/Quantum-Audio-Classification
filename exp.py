@@ -53,7 +53,7 @@ def loop_train(steps,feature_map,init_w, init_b,X_train_t,y_train,X_test_t,y_tes
 
 
 
-def pipeline_cluster(dataset_path,classic, preproc_mfcc, train, preproc_phase=False, phase_type=None, encoding=None, init_w =None, init_b=None):
+def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_phase=False, phase_type=None, encoding=None, init_w =None, init_b=None):
     '''
     
     '''
@@ -63,7 +63,6 @@ def pipeline_cluster(dataset_path,classic, preproc_mfcc, train, preproc_phase=Fa
     y = np.load(dataset_path + "/y.npy")
     folds = np.load(dataset_path + "/folds.npy", allow_pickle=True)
 
-    fold_i = 0
     fold = folds[fold_i]
 
     print("fold: ",fold_i)

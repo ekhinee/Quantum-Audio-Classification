@@ -29,8 +29,7 @@ def prep_folds(path1,path2, output_path):
 
     X1 = list(Path(path1).glob("*.wav"))
     X2 = list(Path(path2).glob("*.wav"))
-
-    X = np.array(X1 + X2)
+    X = np.array([str(p) for p in X1 + X2])
 
     y1 = np.zeros(len(X1), dtype=int)
     y2 = np.ones(len(X2), dtype=int)
