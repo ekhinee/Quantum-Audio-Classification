@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from kodeketak import build_feature_map
 
 
-def fidelity_circuit(x_a, x_b, feature_map, x_a_p=None, x_b_p=None):
-    qc_a = build_feature_map(feature_map=feature_map, data=x_a, data_p=x_a_p)
-    qc_b = build_feature_map(feature_map=feature_map, data=x_b, data_p=x_b_p)
+def fidelity_circuit(x_a, x_b, feature_map, train=False, w=None, b=None,x_a_p=None, x_b_p=None):
+    qc_a = build_feature_map(feature_map=feature_map, train=train, w=w, b=b,data=x_a, data_p=x_a_p)
+    qc_b = build_feature_map(feature_map=feature_map, train=train, w=w, b=b, data=x_b, data_p=x_b_p)
 
     num_qubits = qc_a.num_qubits
 
@@ -18,7 +18,7 @@ def fidelity_circuit(x_a, x_b, feature_map, x_a_p=None, x_b_p=None):
     return qc
 
 
-def get_fidelity(x_a, x_b, feature_map, x_a_p=None, x_b_p=None, seed=42):
+def get_fidelity(x_a, x_b, feature_map, x_a_p=None, x_b_p=None, train=False, w=None, b=None, seed=42):
     qc = fidelity_circuit(x_a=x_a, x_b=x_b, feature_map=feature_map, x_a_p=x_a_p, x_b_p=x_b_p)
     state = Statevector.from_instruction(qc)
     return np.abs(state.data[0]) ** 2
@@ -61,7 +61,7 @@ def get_kernel_matrix_notrain(X1, feature_map, X2=None, X1_p=None, X2_p=None):
     return K
 
 
-def get_kernel_matrix_train(X1, feature_map, w,b, X2=None, X1_p=None, X2_p=None):
+def get_kernel_matrix(X1, feature_map, train=False, w=None,b=None, X2=None, X1_p=None, X2_p=None):
     # Caso 1: un solo dataset -> matriz simétrica
 
     if X2 is None:
@@ -102,41 +102,3 @@ def get_kernel_matrix_train(X1, feature_map, w,b, X2=None, X1_p=None, X2_p=None)
                 )
 
     return K
-
-
-def get_kernel_matrix(X1, feature_map, train,w=None,b=None, X2=None, X1_p=None, X2_p=None):
-    if(train):
-        K = get_kernel_matrix_train(X1=X1,feature_map=feature_map, w=w,b=b,X2=X2,X1_p=X1_p,X2_p=X2_p)
-    else:
-        K = get_kernel_matrix_notrain(X1=X1,feature_map=feature_map, X2=X2,X1_p=X1_p, X2_p=X2_p)
-    return K
-
-def save_kernel_heatmap(K, title, filename, cmap="cool"):
-    plt.figure(figsize=(7,7))
-
-    vmin = np.min(K)
-    vmax = np.max(K)
-
-    im = plt.imshow(
-        K,
-        cmap=cmap,
-        aspect="auto",
-        vmin = vmin,
-        vmax=vmax
-    )
-
-    plt.colorbar(im)
-
-    plt.title(title)
-    plt.xlabel("Lagin indizea")
-    plt.ylabel("Lagin indizea")
-
-    plt.tight_layout()
-    plt.savefig(filename, dpi=300)
-    plt.close()
-
-
-
-
-
-
