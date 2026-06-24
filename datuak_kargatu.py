@@ -73,7 +73,10 @@ def load_audios(paths, sr=22050, duration=30.0):
     return np.array(X)
 
 def main():
-
+    path1 = "./data/gtzan/classical"
+    path2 = ".data/gtzan/jazz"
+    output_path = "./data/prep/classical_jazz"
+    prep_folds(path1,path2,output_path)
     return 0
 
 

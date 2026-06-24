@@ -257,7 +257,7 @@ def ry_rz_1_trainable(data_t,data_p,w, b):
 
     for t_value, (timbre, phase) in enumerate(zip(data_t, data_p)):
 
-        block = t_value // 8
+        block = t_value // 4
 
         t_bits = np.binary_repr(t_value, width=4)
 

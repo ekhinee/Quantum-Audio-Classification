@@ -113,14 +113,21 @@ def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_p
 
         X_train_p_norm, X_val_p_norm, X_test_p_norm = normalize(X_train_p,X_val=X_val_p, X_test=X_test_p,classic=classic, binary=binary_phase)
 
+    # qtse eta klasikoaren kasutan bakarrik datu mota bat sartzen da, zein den ikusteko:
+
+    if(encoding=="qtse" or classic):
+        if(preproc_phase):
+            X_train_t_norm = X_train_p_norm
+            X_val_t_norm = X_val_p_norm
+            X_test_t_norm = X_test_p_norm
+
     # ----------------------------------------
 
     # IF TRAIN
-    w = None
-    b = None
+    
 
     if(train):
-        best_params, best_acc = loop_train(steps=50,init_w=init_w, init_b=init_b,feature_map = "qtse_p3_trainable",X_train_t=X_train_t_norm,y_train=y_train,X_test_t=X_val_t_norm,y_test=y_val, X_train_p=X_train_p_norm, X_test_p=X_val_p_norm)
+        best_params, best_acc = loop_train(steps=50,init_w=init_w, init_b=init_b,feature_map = encoding,X_train_t=X_train_t_norm,y_train=y_train,X_test_t=X_val_t_norm,y_test=y_val, X_train_p=X_train_p_norm, X_test_p=X_val_p_norm)
 
         print("Best params: ", best_params)
         print("Best acc: ", best_acc)
@@ -129,6 +136,9 @@ def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_p
 
         w = best_params[:mid]
         b = best_params[mid:]
+    else:
+        w = None
+        b = None
 
     # ----------------------------------------
 
