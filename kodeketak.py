@@ -167,6 +167,8 @@ def qtse_p2_trainable(data_a,data_p,w,b):
     return qc
 
 def qtse_trainable(data_a,w,b):
+
+
     am_arr = np.asarray(data_a, dtype=int).ravel()
 
     n_qubits = 8
@@ -370,7 +372,7 @@ def build_feature_map(feature_map, data,train=False, w=None,b=None, data_p=None)
 
     if(train):
         if(feature_map == "qtse"):
-            return qtse_trainable(data=data, w=w, b=b)
+            return qtse_trainable(data_a=data, w=w, b=b)
         if(feature_map == "qtse_p2"):
             return qtse_p2_trainable(data_a=data, data_p=data_p, w=w, b=b)
         if(feature_map=="ryrz_1"):

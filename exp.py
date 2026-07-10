@@ -3,12 +3,12 @@ from scipy.optimize import minimize
 import numpy as np
 
 from kernel import get_kernel_matrix
-from svm import svm_classification
+from svm import svm_classification, svm_classic_kernel
 from preprozesaketa import preprocess, normalize
 from datuak_kargatu import load_audios
 
 
-def loop_train(steps,feature_map,init_w, init_b,X_train_t,y_train,X_test_t,y_test,X_train_p = None,X_test_p=None, ):
+def loop_train(steps,feature_map,init_w, init_b,X_train_t,y_train,X_test_t,y_test,X_train_p = None,X_test_p=None):
     
 
     best_acc = 0.0
@@ -22,10 +22,11 @@ def loop_train(steps,feature_map,init_w, init_b,X_train_t,y_train,X_test_t,y_tes
 
         w = params[:mid]
         b = params[mid:]
-        
+
+
         # build kernels
-        K_train_qtse_timbre_phase_trainable = get_kernel_matrix(X_train_t, feature_map=feature_map,w=w,b=b, X1_p=X_train_p)
-        K_test_qtse_timbre_phase_trainable = get_kernel_matrix(X_test_t, feature_map=feature_map,w=w,b=b, X2=X_train_t, X1_p=X_test_p, X2_p=X_train_p)
+        K_train_qtse_timbre_phase_trainable = get_kernel_matrix(X_train_t, feature_map=feature_map,w=w,b=b, X1_p=X_train_p, train=True)
+        K_test_qtse_timbre_phase_trainable = get_kernel_matrix(X_test_t, feature_map=feature_map,w=w,b=b, X2=X_train_t, X1_p=X_test_p, X2_p=X_train_p, train=True)
 
 
         # classification
@@ -53,7 +54,7 @@ def loop_train(steps,feature_map,init_w, init_b,X_train_t,y_train,X_test_t,y_tes
 
 
 
-def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_phase=False, phase_type=None, encoding=None, init_w =None, init_b=None):
+def pipeline_cluster(fold_i,dataset_path,classic, train, preproc_type, phase_type=None, encoding=None, init_w =None, init_b=None):
     '''
     
     '''
@@ -98,6 +99,17 @@ def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_p
     X_train_t_norm, X_val_t_norm, X_test_t_norm = None, None, None
     X_train_p_norm, X_val_p_norm, X_test_p_norm = None, None, None
 
+    if(encoding=="qtse_p1" or encoding=="qtse_p2" or encoding=="qtse_p3" or encoding=="ryrz_1"):
+        preproc_mfcc=True
+        preproc_phase=True
+    else:
+        if(preproc_type=="mfcc"):
+            preproc_mfcc=True
+            preproc_phase=False
+        elif(preproc_type=="phase"):
+            preproc_mfcc=False
+            preproc_phase=True
+
     if(preproc_mfcc):
         X_train_t = preprocess(X_train,type="mfcc",classic=classic)
         X_val_t = preprocess(X_val,type="mfcc",classic=classic)
@@ -107,9 +119,9 @@ def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_p
         
 
     if(preproc_phase):
-        X_train_p = preprocess(X_train,type=phase_type)
-        X_val_p = preprocess(X_val,type=phase_type)
-        X_test_p = preprocess(X_test,type=phase_type)
+        X_train_p = preprocess(X_train,type=phase_type, classic=classic)
+        X_val_p = preprocess(X_val,type=phase_type, classic=classic)
+        X_test_p = preprocess(X_test,type=phase_type, classic=classic)
 
         X_train_p_norm, X_val_p_norm, X_test_p_norm = normalize(X_train_p,X_val=X_val_p, X_test=X_test_p,classic=classic, binary=binary_phase)
 
@@ -144,21 +156,25 @@ def pipeline_cluster(fold_i,dataset_path,classic, preproc_mfcc, train, preproc_p
 
     # KERNELAK KALKULATU
 
-    K_train = get_kernel_matrix(X_train_t_norm, feature_map=encoding,w=w,b=b, X1_p=X_train_p_norm, train=train)
-    K_test = get_kernel_matrix(X_test_t_norm, feature_map=encoding,w=w,b=b, X2=X_train_t_norm, X1_p=X_test_p_norm, X2_p=X_train_p_norm, train=train)
+    if(not(classic)):
+        K_train = get_kernel_matrix(X_train_t_norm, feature_map=encoding,w=w,b=b, X1_p=X_train_p_norm, train=train)
+        K_test = get_kernel_matrix(X_test_t_norm, feature_map=encoding,w=w,b=b, X2=X_train_t_norm, X1_p=X_test_p_norm, X2_p=X_train_p_norm, train=train)
 
 
     # ----------------------------------------
 
     # SVM ENTRENAU ETA SCOREAK LORTU
 
-    final_acc, final_auc, final_f1 = svm_classification(K_train,y_train,K_test,y_test)
+    if(classic):
+        final_acc, final_auc, final_f1 = svm_classic_kernel(X_train_t_norm,y_train, X_test_t_norm, y_test)
+    else:
+        final_acc, final_auc, final_f1 = svm_classification(K_train,y_train,K_test,y_test)
 
     print("FINAL ACC: ", final_acc)
     print("FINAL AUC: ", final_auc)
     print("FINAL F1: ", final_f1)
 
-    return 0
+    return final_acc, final_auc, final_f1
 
      
 

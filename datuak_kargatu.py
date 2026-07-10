@@ -37,12 +37,12 @@ def prep_folds(path1,path2, output_path):
     y = np.concatenate([y1, y2])
 
     idx_all = np.arange(len(y))
-    skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
     folds = []
     for idx_trainval, idx_test in skf.split(idx_all, y):
         idx_train, idx_val = train_test_split(
-            idx_trainval, test_size=0.20, random_state=42, stratify=y[idx_trainval]
+            idx_trainval, test_size=0.30, random_state=42, stratify=y[idx_trainval]
         )
         folds.append({
             "train": idx_train,
@@ -73,10 +73,15 @@ def load_audios(paths, sr=22050, duration=30.0):
     return np.array(X)
 
 def main():
-    path1 = "./data/gtzan/classical"
-    path2 = ".data/gtzan/jazz"
-    output_path = "./data/prep/classical_jazz"
+    path1 = "./data/gtzan/hiphop"
+    path2 = "./data/gtzan/rock"
+    output_path = "./data/prep/64_16_20/hiphop_rock"
     prep_folds(path1,path2,output_path)
+
+    # input_path="/home/iri/.cache/kagglehub/datasets/andradaolteanu/gtzan-dataset-music-genre-classification/versions/1/Data/genres_original/hiphop"
+    # output_path="./data/gtzan/hiphop"
+    # save_audios_gtzan(input_path, output_path, 50)
+
     return 0
 
 
