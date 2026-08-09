@@ -126,8 +126,6 @@ def preproc_gropup_delay(X,classic=False, gamma=0.9, l_w=128,alpha=0.3,N_c = 16)
     return phase_features
 
 
-###JOSE
-
 def cepstral_smoothing_v2(x_m, n_c=16, n_fft=512):
     X_m = fft(x_m, n_fft)
     power_X_m = np.abs(X_m) ** 2  #changed

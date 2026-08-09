@@ -73,13 +73,13 @@ def load_audios(paths, sr=22050, duration=30.0):
     return np.array(X)
 
 def main():
-    path1 = "./data/gtzan/hiphop"
+    path1 = "./data/gtzan/reggae"
     path2 = "./data/gtzan/rock"
-    output_path = "./data/prep/64_16_20/hiphop_rock"
+    output_path = "./data/prep/64_16_20/reggae_rock"
     prep_folds(path1,path2,output_path)
 
-    # input_path="/home/iri/.cache/kagglehub/datasets/andradaolteanu/gtzan-dataset-music-genre-classification/versions/1/Data/genres_original/hiphop"
-    # output_path="./data/gtzan/hiphop"
+    # input_path="/home/iri/.cache/kagglehub/datasets/andradaolteanu/gtzan-dataset-music-genre-classification/versions/1/Data/genres_original/reggae"
+    # output_path="./data/gtzan/reggae"
     # save_audios_gtzan(input_path, output_path, 50)
 
     return 0
