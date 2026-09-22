@@ -27,8 +27,9 @@ def spectral_moment_IF(x, sr=22050, n_fft=2048, hop_length=512):
 def if_signal(x, classic=False, n_frames=16):
     if_features = phase_differencing_IF(x)
     if(classic):   
+        
         return if_features
-    
+        
     T = len(if_features)
     idx = np.linspace(0, T, n_frames + 1, dtype=int)
 

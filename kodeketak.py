@@ -1,6 +1,7 @@
 import numpy as np
-from qiskit import QuantumCircuit
+from qiskit import QuantumCircuit, transpile
 import os
+
 
 
 def draw_circuit(qc, save_path="circuits/circuit.png"):
@@ -9,7 +10,10 @@ def draw_circuit(qc, save_path="circuits/circuit.png"):
     os.makedirs(os.path.dirname(save_path) or ".", exist_ok=True)
 
     # dibujar circuito
+
+    qc_optimized = transpile(qc, optimization_level=1)
     fig = qc.draw(output="mpl")
+    #fig = qc.draw("mpl", fold=-1)
 
     # guardar
     fig.savefig(save_path)
